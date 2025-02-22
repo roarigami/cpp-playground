@@ -7,6 +7,7 @@ int i, j, height = 20, width = 20;
 int gameover, score;
 int x, y, fruitX, fruitY, flag;
 
+<<<<<<< HEAD
 // fruit generation within the boundary
 void fruits()
 {
@@ -134,4 +135,10 @@ int main()
         input();
         logic();
     }
+=======
+int main()
+{
+    cout << "Hello world!" << endl;
+    return 0;
+>>>>>>> parent of c58f63a (Gamespace borders/boundaries)
 }
