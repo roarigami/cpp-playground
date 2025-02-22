@@ -6,3 +6,4 @@ This TCP Web Socket will function as a simple bidirectional communication channe
 
 ### Use Cases:
 - Allow real time persistent data transmission
+- Tested with <a href="https://chromewebstore.google.com/detail/simple-websocket-client/pfdhoblngboilpfeibdedpjgfnlcodoo?hl=en&pli=1">Small Websocket Client</a>

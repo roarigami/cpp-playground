@@ -22,7 +22,14 @@ int main() {
               std::thread{[q = std::move(socket)]() mutable {
                   boost::beast::websocket::stream<tcp::scoket> ws {std::move(q)};
                   ws.accept();
-                  
+
+                  while(1) {
+                      boost::beast::flat_buffer buffer;
+                      ws.read(buffer);
+
+                      auto out = boost::beast::buffers_to_string(buffer.cdata());
+                      std::cout<<out<<std::endl;
+                  }
 
               }}.detach();
         }
