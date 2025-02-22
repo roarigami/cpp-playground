@@ -12,7 +12,7 @@ int main() {
 
         boost::asio::io_context ioc{1};
 
-        tcp::acceptor acceptor{ioc, {addres, port}};
+        tcp::acceptor acceptor{ioc, {address, port}};
 
         while(1) {
               tcp::socket socket{ioc};
@@ -20,7 +20,7 @@ int main() {
               std::cout<<"Socket Accepted"<<std::endl;
 
               std::thread{[q = std::move(socket)]() mutable {
-                  boost::beast::websocket::stream<tcp::scoket> ws {std::move(q)};
+                  boost::beast::websocket::stream<tcp::socket> ws {std::move(q)};
                   ws.accept();
 
                   while(1) {
