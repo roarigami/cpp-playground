@@ -2,8 +2,7 @@
 
 ---
 
-This TCP Web Socket will function as a simple bidirectional communication channel between web clients and
-server.
+This TCP Web Socket will function as a simple bidirectional communication channel between a client and server.
 
 ### Use Cases:
 - Allow real time persistent data transmission

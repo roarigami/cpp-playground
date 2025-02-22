@@ -17,8 +17,15 @@ int main() {
         while(1) {
               tcp::socket socket{ioc};
               acceptor.accept(socket);
-        }
+              std::cout<<"Socket Accepted"<<std::endl;
 
+              std::thread{[q = std::move(socket)]() mutable {
+                  boost::beast::websocket::stream<tcp::scoket> ws {std::move(q)};
+                  ws.accept();
+                  
+
+              }}.detach();
+        }
 
         return 0;
 }
