@@ -1,144 +1,146 @@
+#include <iostream>
 #include <conio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <windows.h>
 
-int i, j, height = 20, width = 20;
-int gameover, score;
-int x, y, fruitX, fruitY, flag;
+using namespace std;
 
-<<<<<<< HEAD
-// fruit generation within the boundary
-void fruits()
-{
-    gameover = 0;
+bool gameOver;
 
-    // store height and width
-    x = height / 2;
-    y = width / 2;
-    fruitsX:
-        fruitX = rand() % 20;
-        if (fruitX == 0)
-            goto fruitsX;
-    fruitsY:
-        fruitY = rand() % 20;
-        if (fruitY == 0)
-            goto fruitsY;
-        score = 0;
+const int width = 20;
+const int height = 20;
+
+int x, y, fruitX, fruitY, score;
+int tailX[100], tailY[100];
+int nTail;
+
+enum eDirecton { STOP = 0, LEFT, RIGHT, UP, DOWN};
+eDirecton dir;
+
+void Setup() {
+    gameOver = false;
+    dir = STOP;
+    x = width / 2;
+    y = height / 2;
+    fruitX = rand() % width;
+    fruitY = rand() % height;
+    score = 0;
 }
+void Draw() {
+    system("cls"); //system("clear") in Linux;
+    for (int i = 0; i < width+2; i++)
+        cout << "#";
+    cout << endl;
 
-void draw()
-{
-    system("cls");
-    for (i = 0; i < height; i++)
-    {
-        for (j = 0; j < width; j++)
-        {
-            if (i == 0 || i == width - 1 || j == 0 || j == height - 1)
-            {
-                printf("#");
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (j == 0)
+                cout << "#";
+            if (i == y && j == x)
+                cout << "O";
+            else if (i == fruitY && j == fruitX)
+                cout << "F";
+            else {
+                bool print = false;
+                for (int k = 0; k < nTail; k++) {
+                    if (tailX[k] == j && tailY[k] == i) {
+                        cout << "o";
+                        print = true;
+                    }
+                }
+                if (!print)
+                    cout << " ";
             }
-            else
-            {
-                if (i == x && j == y)
-                    printf("0");
-                else if (i == fruitX
-                        && j == fruitY)
-                    printf("*");
-                else
-                    printf(" ");
-            }
-        }
-        printf("\n");
-    }
-    printf("score = %d", score);
-    printf("\n");
-    printf("press X to quit the game");
-}
 
-void input()
-{
-    if (kbhit())
-    {
-        switch (getch())
-        {
-            case 'f':
-                flag = 1;
-                break;
-            case 'd':
-                flag = 2;
-                break;
-            case 'j':
-                flag = 3;
-                break;
-            case 'k':
-                flag = 4;
-                break;
-            case 'x':
-                gameover = 1;
-                break;
+
+            if (j == width - 1)
+                cout << "#";
+        }
+        cout << endl;
+    }
+
+    for (int i = 0; i < width+2; i++)
+        cout << "#";
+    cout << endl;
+    cout << "Score:" << score << endl;
+}
+void Input() {
+    if (_kbhit()) {
+        switch (_getch()) {
+        case 'a':
+            dir = LEFT;
+            break;
+        case 'd':
+            dir = RIGHT;
+            break;
+        case 'w':
+            dir = UP;
+            break;
+        case 's':
+            dir = DOWN;
+            break;
+        case 'x':
+            gameOver = true;
+            break;
         }
     }
 }
-
-void logic()
-{
-    sleep(1);
-    switch (flag)
+void Logic() {
+    int prevX = tailX[0];
+    int prevY = tailY[0];
+    int prev2X, prev2Y;
+    tailX[0] = x;
+    tailY[0] = y;
+    for (int i = 1; i < nTail; i++)
     {
-        case 1:
-            x++;
-            break;
-        case 2:
-            y--;
-            break;
-        case 3:
-            x--;
-            break;
-        case 4:
-            y++;
-            break;
-        default:
-            break;
+        prev2X = tailX[i];
+        prev2Y = tailY[i];
+        tailX[i] = prevX;
+        tailY[i] = prevY;
+        prevX = prev2X;
+        prevY = prev2Y;
     }
+    switch (dir)
+    {
+    case LEFT:
+        x--;
+        break;
+    case RIGHT:
+        x++;
+        break;
+    case UP:
+        y--;
+        break;
+    case DOWN:
+        y++;
+        break;
+    default:
+        break;
+    }
+    //if (x > width || x < 0 || y > height || y < 0)
+    //  gameOver = true;
+    if (x >= width) x = 0; else if (x < 0) x = width - 1;
+    if (y >= height) y = 0; else if (y < 0) y = height - 1;
 
-    // game over
-    if (x < 0 || x > height || y < 0 || y > width)
-        gameover = 1;
+    for (int i = 0; i < nTail; i++)
+        if (tailX[i] == x && tailY[i] == y)
+            gameOver = true;
 
-    // snake reaches the fruit and the score gets updated
     if (x == fruitX && y == fruitY)
     {
-        logicX:
-            fruitX = rand() % 20;
-            if (fruitX == 0)
-                goto logicX;
-
-        // generation of new fruit after eating the current one
-        logicY:
-            fruitY = rand() % 20;
-            if (fruitY == 0)
-                goto logicY;
-            score += 5;
+        score += 10;
+        fruitX = rand() % width;
+        fruitY = rand() % height;
+        nTail++;
     }
 }
-
-int main()
-{
-    // boundary generation
-    fruits();
-
-    // till the game is over
-    while (!gameover)
+int main() {
+    Setup();
+    while (!gameOver)
     {
-        draw();
-        input();
-        logic();
+        Draw();
+        Input();
+        Logic();
+        Sleep(10); //sleep(10);
     }
-=======
-int main()
-{
-    cout << "Hello world!" << endl;
     return 0;
->>>>>>> parent of c58f63a (Gamespace borders/boundaries)
 }
